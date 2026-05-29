@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FishyWebAI</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <div class="background-glow"></div>
+
+    <div class="container">
+
+        <div class="header">
+
+   <div class="navbar">
+
+    <h1>🐟 FishyWebAI</h1>
+
+    <div class="nav-links">
+
+        <a href="/" class="nav-btn">🏠 Scanner</a>
+
+        <a href="/history" class="nav-btn">📋 History</a>
+
+        <a href="/dashboard" class="nav-btn">📊 Dashboard</a>
+
+    </div>
+
+</div>
+
+   <div>
+
+    <a href="/history" class="history-btn">
+        📋 History
+    </a>
+
+    <a href="/dashboard" class="history-btn">
+        📊 Dashboard
+    </a>
+
+</div>
+</a>
+
+</div>
+
+        <p class="subtitle">
+            AI-Powered Real-Time Phishing Detection System
+        </p>
+
+        <form method="POST">
+
+            <div class="input-group">
+
+                <input
+                    type="text"
+                    name="url"
+                    placeholder="Enter URL to scan..."
+                    required
+                >
+
+                <button type="submit">SCAN</button>
+
+            </div>
+
+        </form>
+
+        {% if result %}
+
+            <div class="scanner-animation">
+                <div class="scanner-line"></div>
+            </div>
+{% if vt_result %}
+
+<div class="result-card">
+
+    <h2>VIRUSTOTAL THREAT INTELLIGENCE</h2>
+
+    <div class="result">
+        {{ vt_result }}
+    </div>
+
+    <a href="/download-report" class="download-btn">
+    📄 Download PDF Report
+</a>
+
+</div>
+
+{% endif %}
+            <div class="result-card">
+
+                <h2>SCAN RESULT</h2>
+
+                <div class="result">
+                    {{ result }}
+                </div>
+
+                <!-- Circular Confidence Meter -->
+
+                <div class="circle-container">
+
+                    <div
+                        class="circle"
+                        style="--percentage: {{ confidence }};"
+                    >
+
+                        <div class="inner-circle">
+
+                            <h3>{{ confidence }}%</h3>
+
+                            <p>Threat Confidence</p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="checks">
+
+                <h2>LIVE WEBSITE ANALYSIS</h2>
+
+                <ul>
+                    {% for check in live_checks %}
+                        <li>{{ check }}</li>
+                    {% endfor %}
+                </ul>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</body>
+</html>

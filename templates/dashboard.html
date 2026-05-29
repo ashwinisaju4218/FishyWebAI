@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <title>FishyWebAI Dashboard</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+
+        <div class="navbar">
+
+    <h1>📊 Analytics Dashboard</h1>
+
+    <div class="nav-links">
+
+        <a href="/" class="nav-btn">🏠 Scanner</a>
+
+        <a href="/history" class="nav-btn">📋 History</a>
+
+        <a href="/dashboard" class="nav-btn">📊 Dashboard</a>
+
+    </div>
+
+</div>
+
+        <a href="/" class="history-btn">
+            🏠 Scanner
+        </a>
+
+    </div>
+
+    <div class="stats-grid">
+
+        <div class="stat-card">
+            <h2>{{ stats.total }}</h2>
+            <p>Total Scans</p>
+        </div>
+
+        <div class="stat-card">
+            <h2>{{ stats.safe }}</h2>
+            <p>Safe Websites</p>
+        </div>
+
+        <div class="stat-card">
+            <h2>{{ stats.phishing }}</h2>
+            <p>Phishing Websites</p>
+        </div>
+
+    </div>
+
+    <div class="chart-section">
+
+        <h2>Threat Distribution</h2>
+
+        <div class="pie-chart">
+
+            <div
+                class="pie"
+                style="--safe: {{ safe_percent }}%;"
+            >
+                <div class="pie-center">
+                    {{ stats.total }}
+                    <span>Scans</span>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="legend">
+
+            <div class="legend-item">
+                🟢 Safe: {{ safe_percent }}%
+            </div>
+
+            <div class="legend-item">
+                🔴 Phishing: {{ phishing_percent }}%
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>
