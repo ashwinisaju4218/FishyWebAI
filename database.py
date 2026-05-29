@@ -103,3 +103,53 @@ def get_dashboard_stats():
         "phishing": phishing_count,
         "safe": safe_count
     }
+
+def get_top_threats():
+
+    conn = sqlite3.connect("fishywebai.db")
+
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    SELECT url, COUNT(*)
+
+    FROM scans
+
+    WHERE result='PHISHING'
+
+    GROUP BY url
+
+    ORDER BY COUNT(*) DESC
+
+    LIMIT 5
+    """)
+
+    rows = cursor.fetchall()
+
+    conn.close()
+
+    return rows
+
+
+def get_trend_data():
+
+    conn = sqlite3.connect("fishywebai.db")
+
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    SELECT DATE(scan_time),
+           COUNT(*)
+
+    FROM scans
+
+    GROUP BY DATE(scan_time)
+
+    ORDER BY DATE(scan_time)
+    """)
+
+    rows = cursor.fetchall()
+
+    conn.close()
+
+    return rows

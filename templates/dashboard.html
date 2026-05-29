@@ -1,64 +1,77 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FishyWebAI Dashboard</title>
 
-    <link rel="stylesheet"
-          href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-
 <body>
+
+<div class="background"></div>
 
 <div class="container">
 
-    <div class="header">
+    <div class="navbar">
 
-        <div class="navbar">
+        <div class="logo-section">
 
-    <h1>📊 Analytics Dashboard</h1>
+            <div class="fish-logo">🛡️🐟</div>
 
-    <div class="nav-links">
+            <h1>Dashboard</h1>
 
-        <a href="/" class="nav-btn">🏠 Scanner</a>
+        </div>
 
-        <a href="/history" class="nav-btn">📋 History</a>
+        <div class="nav-links">
 
-        <a href="/dashboard" class="nav-btn">📊 Dashboard</a>
+            <a href="/" class="nav-btn">Scanner</a>
 
-    </div>
+            <a href="/history" class="nav-btn">History</a>
 
-</div>
+            <a href="/dashboard" class="nav-btn">Dashboard</a>
 
-        <a href="/" class="history-btn">
-            🏠 Scanner
-        </a>
+        </div>
 
     </div>
+
+    <!-- STATS -->
 
     <div class="stats-grid">
 
-        <div class="stat-card">
+        <div class="card stat-card">
+
             <h2>{{ stats.total }}</h2>
+
             <p>Total Scans</p>
+
         </div>
 
-        <div class="stat-card">
+        <div class="card stat-card">
+
             <h2>{{ stats.safe }}</h2>
+
             <p>Safe Websites</p>
+
         </div>
 
-        <div class="stat-card">
+        <div class="card stat-card">
+
             <h2>{{ stats.phishing }}</h2>
+
             <p>Phishing Websites</p>
+
         </div>
 
     </div>
 
-    <div class="chart-section">
+    <!-- PIE CHART -->
 
-        <h2>Threat Distribution</h2>
+    <div class="card chart-section">
+
+        <h3>Threat Distribution</h3>
 
         <div class="pie-chart">
 
@@ -66,10 +79,15 @@
                 class="pie"
                 style="--safe: {{ safe_percent }}%;"
             >
+
                 <div class="pie-center">
+
                     {{ stats.total }}
-                    <span>Scans</span>
+
+                    <span>Total Scans</span>
+
                 </div>
+
             </div>
 
         </div>
@@ -88,7 +106,87 @@
 
     </div>
 
+    <!-- TOP THREATS -->
+
+    <div class="card">
+
+        <h3>🏆 Top Detected Threats</h3>
+
+        <ul>
+
+            {% for threat in top_threats %}
+
+            <li>
+
+                {{ threat[0] }}
+
+                ({{ threat[1] }} detections)
+
+            </li>
+
+            {% endfor %}
+
+        </ul>
+
+    </div>
+
+    <!-- TREND GRAPH -->
+
+    <div class="card">
+
+        <h3>📈 Scan Trends</h3>
+
+        <canvas id="trendChart"></canvas>
+
+    </div>
+
 </div>
+
+<script>
+
+new Chart(
+    document.getElementById("trendChart"),
+    {
+        type:"line",
+
+        data:{
+
+            labels:[
+
+                {% for row in trend_data %}
+
+                "{{ row[0] }}",
+
+                {% endfor %}
+
+            ],
+
+            datasets:[{
+
+                label:"Scans",
+
+                data:[
+
+                    {% for row in trend_data %}
+
+                    {{ row[1] }},
+
+                    {% endfor %}
+
+                ],
+
+                borderColor:"#2563eb",
+
+                fill:false,
+
+                tension:0.3
+
+            }]
+        }
+    }
+);
+
+</script>
 
 </body>
 </html>

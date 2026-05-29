@@ -9,132 +9,125 @@
 </head>
 <body>
 
-    <div class="background-glow"></div>
+<div class="background"></div>
 
-    <div class="container">
+<div class="container">
 
-        <div class="header">
+    <div class="navbar">
 
-   <div class="navbar">
+        <div class="logo-section">
+            <div class="fish-logo">🛡️🐟</div>
+            <h1>FishyWebAI</h1>
+        </div>
 
-    <h1>🐟 FishyWebAI</h1>
-
-    <div class="nav-links">
-
-        <a href="/" class="nav-btn">🏠 Scanner</a>
-
-        <a href="/history" class="nav-btn">📋 History</a>
-
-        <a href="/dashboard" class="nav-btn">📊 Dashboard</a>
+        <div class="nav-links">
+            <a href="/" class="nav-btn">Scanner</a>
+            <a href="/history" class="nav-btn">History</a>
+            <a href="/dashboard" class="nav-btn">Dashboard</a>
+        </div>
 
     </div>
 
-</div>
+    <div class="hero">
 
-   <div>
+        <h2>AI-Powered Real-Time Phishing Detection System</h2>
 
-    <a href="/history" class="history-btn">
-        📋 History
-    </a>
-
-    <a href="/dashboard" class="history-btn">
-        📊 Dashboard
-    </a>
-
-</div>
-</a>
-
-</div>
-
-        <p class="subtitle">
-            AI-Powered Real-Time Phishing Detection System
+        <p>
+            Analyze websites, detect phishing threats and identify suspicious URLs using Machine Learning.
         </p>
 
-        <form method="POST">
-
-            <div class="input-group">
-
-                <input
-                    type="text"
-                    name="url"
-                    placeholder="Enter URL to scan..."
-                    required
-                >
-
-                <button type="submit">SCAN</button>
-
-            </div>
-
-        </form>
-
-        {% if result %}
-
-            <div class="scanner-animation">
-                <div class="scanner-line"></div>
-            </div>
-{% if vt_result %}
-
-<div class="result-card">
-
-    <h2>VIRUSTOTAL THREAT INTELLIGENCE</h2>
-
-    <div class="result">
-        {{ vt_result }}
     </div>
 
-    <a href="/download-report" class="download-btn">
-    📄 Download PDF Report
-</a>
+    <form method="POST">
+
+        <div class="input-group">
+
+            <input
+                type="text"
+                name="url"
+                placeholder="Enter website URL..."
+                required
+            >
+
+            <button type="submit">
+                Scan Website
+            </button>
+
+        </div>
+
+    </form>
+
+    {% if result %}
+
+    <div class="scanner-animation">
+        <div class="scanner-line"></div>
+    </div>
+
+    <div class="card">
+
+        <h3>Scan Result</h3>
+
+        <div class="result-text">
+            {{ result }}
+        </div>
+
+        <div class="circle-container">
+
+            <div class="circle" style="--percentage: {{ confidence }};">
+
+                <div class="inner-circle">
+
+                    <h4>{{ confidence }}%</h4>
+
+                    <span>Confidence Score</span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    {% if vt_result %}
+
+    <div class="card">
+
+        <h3>VirusTotal Threat Intelligence</h3>
+
+        <div class="result-text">
+            {{ vt_result }}
+        </div>
+
+    </div>
+
+    {% endif %}
+
+    <div class="card">
+
+        <h3>Live Website Analysis</h3>
+
+        <ul class="analysis-list">
+
+            {% for check in live_checks %}
+                <li>{{ check }}</li>
+            {% endfor %}
+
+        </ul>
+
+    </div>
+
+    <div class="card" style="text-align:center;">
+
+        <a href="/download-report" class="download-btn">
+            📄 Download Security Report
+        </a>
+
+    </div>
+
+    {% endif %}
 
 </div>
-
-{% endif %}
-            <div class="result-card">
-
-                <h2>SCAN RESULT</h2>
-
-                <div class="result">
-                    {{ result }}
-                </div>
-
-                <!-- Circular Confidence Meter -->
-
-                <div class="circle-container">
-
-                    <div
-                        class="circle"
-                        style="--percentage: {{ confidence }};"
-                    >
-
-                        <div class="inner-circle">
-
-                            <h3>{{ confidence }}%</h3>
-
-                            <p>Threat Confidence</p>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-            <div class="checks">
-
-                <h2>LIVE WEBSITE ANALYSIS</h2>
-
-                <ul>
-                    {% for check in live_checks %}
-                        <li>{{ check }}</li>
-                    {% endfor %}
-                </ul>
-
-            </div>
-
-        {% endif %}
-
-    </div>
 
 </body>
 </html>

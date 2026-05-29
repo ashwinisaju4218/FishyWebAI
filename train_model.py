@@ -6,6 +6,7 @@ import joblib
 
 # Load dataset
 df = pd.read_csv("dataset/dataset.csv")
+print(df.columns.tolist())
 
 # Remove unnecessary column
 df.drop("index", axis=1, inplace=True)

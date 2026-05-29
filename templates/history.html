@@ -1,65 +1,154 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FishyWebAI History</title>
 
-    <link rel="stylesheet"
-          href="{{ url_for('static', filename='style.css') }}">
-
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-
 <body>
+
+<div class="background"></div>
 
 <div class="container">
 
     <div class="navbar">
 
-    <h1>📋 Scan History</h1>
+        <div class="logo-section">
 
-    <div class="nav-links">
+            <div class="fish-logo">🐟</div>
 
-        <a href="/" class="nav-btn">🏠 Scanner</a>
+            <h1>History</h1>
 
-        <a href="/history" class="nav-btn">📋 History</a>
+        </div>
 
-        <a href="/dashboard" class="nav-btn">📊 Dashboard</a>
+        <div class="nav-links">
+
+            <a href="/" class="nav-btn">
+                Scanner
+            </a>
+
+            <a href="/history" class="nav-btn">
+                History
+            </a>
+
+            <a href="/dashboard" class="nav-btn">
+                Dashboard
+            </a>
+
+        </div>
+
+    </div>
+
+    <div class="card">
+
+        <h3>Scan History</h3>
+
+        <div class="search-box">
+
+    <input
+        type="text"
+        id="historySearch"
+        placeholder="Search URL..."
+        onkeyup="searchTable()"
+    >
+
+    <a href="/clear-history"
+       class="delete-btn">
+
+       🗑 Clear History
+
+    </a>
+
+</div>
+
+        <table class="history-table">
+
+            <thead>
+
+                <tr>
+                    <th>ID</th>
+                    <th>URL</th>
+                    <th>Result</th>
+                    <th>Confidence</th>
+                    <th>Time</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                {% for scan in scans %}
+
+                <tr>
+
+                    <td>{{ scan[0] }}</td>
+
+                    <td>{{ scan[1] }}</td>
+
+                    <td>{{ scan[2] }}</td>
+
+                    <td>{{ scan[3] }}%</td>
+
+                    <td>{{ scan[4] }}</td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
 
     </div>
 
 </div>
 
-    <table class="history-table">
+<script>
 
-        <tr>
-            <th>ID</th>
-            <th>URL</th>
-            <th>Result</th>
-            <th>Confidence</th>
-            <th>Time</th>
-        </tr>
+function searchTable() {
 
-        {% for scan in scans %}
+    let input =
+    document.getElementById(
+    "historySearch"
+    );
 
-        <tr>
+    let filter =
+    input.value.toUpperCase();
 
-            <td>{{ scan[0] }}</td>
+    let table =
+    document.querySelector(
+    ".history-table"
+    );
 
-            <td>{{ scan[1] }}</td>
+    let tr =
+    table.getElementsByTagName(
+    "tr"
+    );
 
-            <td>{{ scan[2] }}</td>
+    for(let i=1;i<tr.length;i++){
 
-            <td>{{ scan[3] }}%</td>
+        let td =
+        tr[i].getElementsByTagName(
+        "td"
+        )[1];
 
-            <td>{{ scan[4] }}</td>
+        if(td){
 
-        </tr>
+            let txt =
+            td.textContent;
 
-        {% endfor %}
+            tr[i].style.display =
+            txt.toUpperCase()
+            .includes(filter)
+            ? ""
+            : "none";
+        }
+    }
+}
 
-    </table>
-
-</div>
+</script>
 
 </body>
 </html>
