@@ -3,6 +3,9 @@ import pandas as pd
 import joblib
 import socket
 import whois
+import csv
+from io import StringIO
+from flask import Response
 
 from feature_extractor import extract_features
 from virustotal_checker import check_virustotal
@@ -179,14 +182,13 @@ Confidence: {confidence}%
             print("Prediction Error:", e)
 
     return render_template(
-        "index.html",
-        result=result,
-        confidence=confidence,
-        live_checks=live_checks,
-        vt_result=vt_result,
-        domain_info=domain_info
-    )
-
+    "index.html",
+    result=result,
+    confidence=confidence,
+    live_checks=live_checks,
+    vt_result=vt_result,
+    domain_info=domain_info
+)
 
 @app.route("/history")
 def history():
@@ -194,9 +196,9 @@ def history():
     scans = get_scans()
 
     return render_template(
-        "history.html",
-        scans=scans
-    )
+    "history.html",
+    scans=scans
+)
 
 
 @app.route("/dashboard")
@@ -230,13 +232,13 @@ def dashboard():
     trend_data = get_trend_data()
 
     return render_template(
-        "dashboard.html",
-        stats=stats,
-        safe_percent=safe_percent,
-        phishing_percent=phishing_percent,
-        top_threats=top_threats,
-        trend_data=trend_data
-    )
+    "dashboard.html",
+    stats=stats,
+    safe_percent=safe_percent,
+    phishing_percent=phishing_percent,
+    top_threats=top_threats,
+    trend_data=trend_data
+)
 
 
 @app.route("/download-report")
@@ -247,6 +249,39 @@ def download_report():
         as_attachment=True
     )
 
+@app.route("/export-csv")
+def export_csv():
+
+    scans = get_scans()
+
+    output = StringIO()
+
+    writer = csv.writer(output)
+
+    writer.writerow([
+        "ID",
+        "URL",
+        "Result",
+        "Confidence",
+        "Scan Time"
+    ])
+
+    for row in scans:
+        writer.writerow(row)
+
+    return Response(
+        output.getvalue(),
+        mimetype="text/csv",
+        headers={
+            "Content-Disposition":
+            "attachment; filename=scan_history.csv"
+        }
+    )
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(
+        host="0.0.0.0",
+        port=5000,
+        debug=True
+    )
+

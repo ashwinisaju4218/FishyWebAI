@@ -122,7 +122,7 @@ Confidence: {confidence}%
         )
 
     return render_template(
-        "index.html",
+        "/",
         result=result,
         confidence=confidence,
         live_checks=live_checks,
@@ -135,7 +135,7 @@ def history():
     scans = get_scans()
 
     return render_template(
-        "history.html",
+        "/history",
         scans=scans
     )
 
@@ -145,7 +145,7 @@ def dashboard():
     stats = get_dashboard_stats()
 
     return render_template(
-        "dashboard.html",
+        "/dashboard",
         stats=stats
     )
 

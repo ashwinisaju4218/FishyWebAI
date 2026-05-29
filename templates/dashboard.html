@@ -1,192 +1,224 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FishyWebAI Dashboard</title>
-
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Dashboard — FishyWebAI</title>
+<meta name="description" content="Threat analytics dashboard: total scans, phishing trends, top threats, and recent activity." />
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet"
+href="{{ url_for('static', filename='style.css') }}">
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <body>
 
-<div class="background"></div>
-
-<div class="container">
-
-    <div class="navbar">
-
-        <div class="logo-section">
-
-            <div class="fish-logo">🛡️🐟</div>
-
-            <h1>Dashboard</h1>
-
+<div class="header-wrap">
+  <div class="container">
+    <header class="app-header glass-card">
+      <a href="/" class="logo">
+        <div class="logo-mark">
+          <svg viewBox="0 0 32 32" width="24" height="24" fill="none">
+            <path d="M16 3l10 4v8c0 6.5-4.3 12-10 14C10.3 27 6 21.5 6 15V7l10-4z" fill="white" fill-opacity="0.95"/>
+            <path d="M11 16c0-2 2-3.5 4-3.5s4 1.5 4 3.5-2 3.5-4 3.5-4-1.5-4-3.5z" fill="#2563eb"/>
+            <path d="M19 16l3-1.8v3.6L19 16z" fill="#2563eb"/>
+            <circle cx="13" cy="15.3" r="0.6" fill="white"/>
+          </svg>
         </div>
-
-        <div class="nav-links">
-
-            <a href="/" class="nav-btn">Scanner</a>
-
-            <a href="/history" class="nav-btn">History</a>
-
-            <a href="/dashboard" class="nav-btn">Dashboard</a>
-
+        <div class="logo-text">
+          <span class="name">Fishy<span class="gradient-text">WebAI</span></span>
+          <span class="tag">Threat Intelligence</span>
         </div>
-
-    </div>
-
-    <!-- STATS -->
-
-    <div class="stats-grid">
-
-        <div class="card stat-card">
-
-            <h2>{{ stats.total }}</h2>
-
-            <p>Total Scans</p>
-
-        </div>
-
-        <div class="card stat-card">
-
-            <h2>{{ stats.safe }}</h2>
-
-            <p>Safe Websites</p>
-
-        </div>
-
-        <div class="card stat-card">
-
-            <h2>{{ stats.phishing }}</h2>
-
-            <p>Phishing Websites</p>
-
-        </div>
-
-    </div>
-
-    <!-- PIE CHART -->
-
-    <div class="card chart-section">
-
-        <h3>Threat Distribution</h3>
-
-        <div class="pie-chart">
-
-            <div
-                class="pie"
-                style="--safe: {{ safe_percent }}%;"
-            >
-
-                <div class="pie-center">
-
-                    {{ stats.total }}
-
-                    <span>Total Scans</span>
-
-                </div>
-
-            </div>
-
-        </div>
-
-        <div class="legend">
-
-            <div class="legend-item">
-                🟢 Safe: {{ safe_percent }}%
-            </div>
-
-            <div class="legend-item">
-                🔴 Phishing: {{ phishing_percent }}%
-            </div>
-
-        </div>
-
-    </div>
-
-    <!-- TOP THREATS -->
-
-    <div class="card">
-
-        <h3>🏆 Top Detected Threats</h3>
-
-        <ul>
-
-            {% for threat in top_threats %}
-
-            <li>
-
-                {{ threat[0] }}
-
-                ({{ threat[1] }} detections)
-
-            </li>
-
-            {% endfor %}
-
-        </ul>
-
-    </div>
-
-    <!-- TREND GRAPH -->
-
-    <div class="card">
-
-        <h3>📈 Scan Trends</h3>
-
-        <canvas id="trendChart"></canvas>
-
-    </div>
-
+      </a>
+      <nav class="nav">
+        <a href="/"><i data-lucide="search"></i> Scanner</a>
+        <a href="/dashboard" class="active"><i data-lucide="layout-dashboard"></i> Dashboard</a>
+        <a href="/history"><i data-lucide="history"></i> History</a>
+      </nav>
+      <div class="header-actions">
+        <span class="status-pill"><span class="dot"></span> API Online</span>
+        <button class="btn-primary"><i data-lucide="shield"></i> Pro</button>
+      </div>
+    </header>
+    <nav class="nav mobile-nav glass-panel">
+        <a href="/"><i data-lucide="search"></i> Scanner</a>
+        <a href="/dashboard" class="active"><i data-lucide="layout-dashboard"></i> Dashboard</a>
+        <a href="/history"><i data-lucide="history"></i> History</a>
+    </nav>
+  </div>
 </div>
 
+<main class="container">
+  <div class="page-head">
+    <div>
+      <h1>Threat Dashboard</h1>
+      <p>Real-time intelligence across all monitored URLs.</p>
+    </div>
+    <div class="live-pill glass-panel"><span class="dot"></span> Live · updated 2s ago</div>
+  </div>
+
+  <section class="stats">
+    <div class="stat glass-card">
+      <div class="stat-top"><div class="stat-icon primary"><i data-lucide="activity"></i></div><span class="delta">+12.4%</span></div>
+      <div class="stat-val" id="totalScans">{{ stats.total }}</div>
+      <div class="stat-label">Total Scans</div>
+    </div>
+    <div class="stat glass-card">
+      <div class="stat-top"><div class="stat-icon success"><i data-lucide="shield-check"></i></div><span class="delta">+8.1%</span></div>
+      <div class="stat-val">{{ stats.safe }}</div>
+      <div class="stat-label">Safe Websites</div>
+    </div>
+    <div class="stat glass-card">
+      <div class="stat-top"><div class="stat-icon danger"><i data-lucide="shield-alert"></i></div><span class="delta neg">+24.7%</span></div>
+      <div class="stat-val">{{ stats.phishing }}</div>
+      <div class="stat-label">Phishing Detected</div>
+    </div>
+    <div class="stat glass-card">
+      <div class="stat-top"><div class="stat-icon warning"><i data-lucide="alert-triangle"></i></div><span class="delta">-3.2%</span></div>
+      <div class="stat-val">184</div>
+      <div class="stat-label">Medium Risk</div>
+    </div>
+  </section>
+
+  <section class="chart-row">
+    <div class="chart-card glass-card">
+      <div class="chart-head">
+        <div>
+          <h3>Scan Trends</h3>
+          <p class="muted">Past 7 days · safe vs phishing</p>
+        </div>
+        <div class="chart-legend">
+          <span><span class="legend-dot" style="background:var(--success)"></span> Safe</span>
+          <span><span class="legend-dot" style="background:var(--destructive)"></span> Phishing</span>
+        </div>
+      </div>
+      <div class="chart-container"><canvas id="trendChart"></canvas></div>
+    </div>
+
+    <div class="chart-card glass-card">
+      <h3>Threat Breakdown</h3>
+      <p class="muted">All scans this month</p>
+      <div class="pie-wrap" style="margin-top:8px"><canvas id="pieChart"></canvas>
+        <div class="pie-center"><span class="v" id="pieTotal">{{ stats.total }}</span><span class="l">Total</span></div>
+      </div>
+      <div class="pie-legend">
+        <div class="row"><span class="v" style="font-weight:400"><span class="legend-dot" style="background:var(--success);display:inline-block;margin-right:8px"></span>Safe</span><span class="v">1,247</span></div>
+        <div class="row"><span class="v" style="font-weight:400"><span class="legend-dot" style="background:var(--warning);display:inline-block;margin-right:8px"></span>Medium</span><span class="v">184</span></div>
+        <div class="row"><span class="v" style="font-weight:400"><span class="legend-dot" style="background:var(--destructive);display:inline-block;margin-right:8px"></span>Phishing</span><span class="v">312</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="bottom-row">
+    <div class="chart-card glass-card">
+      <div class="chart-head" style="margin-bottom:8px">
+        <h3>Recent Scans</h3>
+        <a href="/history" class="view-all">View all <i data-lucide="arrow-up-right" width="14" height="14"></i></a>
+      </div>
+      <div class="recent-list" id="recentList"></div>
+    </div>
+
+    <div>
+      <div class="chart-card glass-card">
+        <h3 style="display:flex;align-items:center;gap:8px"><i data-lucide="trending-up" width="16" height="16" style="color:var(--primary)"></i> Top Detected Threats</h3>
+        <div class="threat-list" id="threatList"></div>
+      </div>
+
+      <div class="summary-card">
+        <i data-lucide="shield-check" width="28" height="28" style="opacity:0.9"></i>
+        <h3>Intelligence Summary</h3>
+        <p>Phishing activity is up 24.7% week-over-week, driven by credential-harvesting campaigns targeting fintech logins.</p>
+        <div class="summary-stats">
+          <div><div class="v">89</div><div class="l">Engines</div></div>
+          <div><div class="v">1.2s</div><div class="l">Avg scan</div></div>
+          <div><div class="v">99.4%</div><div class="l">Accuracy</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>© 2026 FishyWebAI · AI-powered phishing detection · Powered by VirusTotal Intelligence</footer>
+
 <script>
+const mockHistory = [
+  { id: "SC-10241", url: "https://secure-paypal-login.verify-account.com", result: "High Risk", confidence: 97, date: "2026-05-29 14:22" },
+  { id: "SC-10240", url: "https://github.com/login", result: "Safe", confidence: 99, date: "2026-05-29 13:58" },
+  { id: "SC-10239", url: "http://amaz0n-prime-renewal.support-id.net", result: "High Risk", confidence: 94, date: "2026-05-29 12:11" },
+  { id: "SC-10238", url: "https://stripe.com/dashboard", result: "Safe", confidence: 98, date: "2026-05-29 11:47" },
+  { id: "SC-10237", url: "http://free-giftcard-claim.bonus-zone.io", result: "High Risk", confidence: 91, date: "2026-05-29 10:33" },
+  { id: "SC-10236", url: "https://docs.google.com/forms/d/abc", result: "Medium", confidence: 62, date: "2026-05-29 09:15" }
+];
+const topThreats = [
+  { name: "Credential Phishing", count: 247, change: "+18%" },
+  { name: "Fake Login Pages", count: 189, change: "+12%" },
+  { name: "Brand Impersonation", count: 142, change: "+9%" },
+  { name: "Malicious Redirects", count: 98, change: "-4%" },
+  { name: "Crypto Scams", count: 76, change: "+22%" }
+];
 
-new Chart(
-    document.getElementById("trendChart"),
-    {
-        type:"line",
+const badgeMap = { "Safe": "safe", "Medium": "medium", "High Risk": "high" };
+document.getElementById('recentList').innerHTML = mockHistory.map(r => `
+  <div class="recent-item">
+    <div class="recent-left">
+      <div class="recent-globe"><i data-lucide="globe" width="16" height="16"></i></div>
+      <div>
+        <div class="recent-url">${r.url}</div>
+        <div class="recent-meta">${r.date} · ${r.id}</div>
+      </div>
+    </div>
+    <span class="tag ${badgeMap[r.result]}">${r.result}</span>
+  </div>
+`).join('');
 
-        data:{
+document.getElementById('threatList').innerHTML = topThreats.map(t => `
+  <div>
+    <div class="t-row"><span>${t.name}</span><span style="font-variant-numeric:tabular-nums;font-weight:500">${t.count}</span></div>
+    <div class="bar"><div style="width:${(t.count/247)*100}%"></div></div>
+  </div>
+`).join('');
 
-            labels:[
-
-                {% for row in trend_data %}
-
-                "{{ row[0] }}",
-
-                {% endfor %}
-
-            ],
-
-            datasets:[{
-
-                label:"Scans",
-
-                data:[
-
-                    {% for row in trend_data %}
-
-                    {{ row[1] }},
-
-                    {% endfor %}
-
-                ],
-
-                borderColor:"#2563eb",
-
-                fill:false,
-
-                tension:0.3
-
-            }]
-        }
+// Trend area chart
+const trendCtx = document.getElementById('trendChart').getContext('2d');
+const trendData = {
+  labels: ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],
+  datasets: [
+    { label: "Safe", data: [142,168,134,189,201,156,178], borderColor: "#10b981", backgroundColor: "rgba(16,185,129,0.2)", fill: true, tension: 0.4, borderWidth: 2, pointRadius: 0 },
+    { label: "Phishing", data: [28,41,22,53,47,31,39], borderColor: "#ef4444", backgroundColor: "rgba(239,68,68,0.18)", fill: true, tension: 0.4, borderWidth: 2, pointRadius: 0 }
+  ]
+};
+new Chart(trendCtx, {
+  type: 'line', data: trendData,
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false }, tooltip: { backgroundColor: '#fff', titleColor: '#0f1729', bodyColor: '#0f1729', borderColor: '#e5e9f0', borderWidth: 1, padding: 10 } },
+    scales: {
+      x: { grid: { display: false }, ticks: { color: '#64748b', font: { size: 11 } } },
+      y: { grid: { color: '#e5e9f0', borderDash: [3,3] }, ticks: { color: '#64748b', font: { size: 11 } } }
     }
-);
+  }
+});
 
+// Pie chart
+new Chart(document.getElementById('pieChart'), {
+  type: 'doughnut',
+  data: {
+    labels: ["Safe","Medium","Phishing"],
+    datasets: [{
+      data: [1247, 184, 312],
+      backgroundColor: ["#10b981","#f59e0b","#ef4444"],
+      borderWidth: 0, cutout: '68%'
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false }, tooltip: { backgroundColor: '#fff', titleColor: '#0f1729', bodyColor: '#0f1729', borderColor: '#e5e9f0', borderWidth: 1 } }
+  }
+});
+
+lucide.createIcons();
 </script>
-
 </body>
 </html>

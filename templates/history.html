@@ -1,154 +1,183 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FishyWebAI History</title>
-
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Scan History — FishyWebAI</title>
+<meta name="description" content="Browse all past phishing scans, filter results, and export findings." />
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet"
+href="{{ url_for('static', filename='style.css') }}">
+<script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
 
-<div class="background"></div>
-
-<div class="container">
-
-    <div class="navbar">
-
-        <div class="logo-section">
-
-            <div class="fish-logo">🐟</div>
-
-            <h1>History</h1>
-
+<div class="header-wrap">
+  <div class="container">
+    <header class="app-header glass-card">
+      <a href="/" class="logo">
+        <div class="logo-mark">
+          <svg viewBox="0 0 32 32" width="24" height="24" fill="none">
+            <path d="M16 3l10 4v8c0 6.5-4.3 12-10 14C10.3 27 6 21.5 6 15V7l10-4z" fill="white" fill-opacity="0.95"/>
+            <path d="M11 16c0-2 2-3.5 4-3.5s4 1.5 4 3.5-2 3.5-4 3.5-4-1.5-4-3.5z" fill="#2563eb"/>
+            <path d="M19 16l3-1.8v3.6L19 16z" fill="#2563eb"/>
+            <circle cx="13" cy="15.3" r="0.6" fill="white"/>
+          </svg>
         </div>
-
-        <div class="nav-links">
-
-            <a href="/" class="nav-btn">
-                Scanner
-            </a>
-
-            <a href="/history" class="nav-btn">
-                History
-            </a>
-
-            <a href="/dashboard" class="nav-btn">
-                Dashboard
-            </a>
-
+        <div class="logo-text">
+          <span class="name">Fishy<span class="gradient-text">WebAI</span></span>
+          <span class="tag">Threat Intelligence</span>
         </div>
-
-    </div>
-
-    <div class="card">
-
-        <h3>Scan History</h3>
-
-        <div class="search-box">
-
-    <input
-        type="text"
-        id="historySearch"
-        placeholder="Search URL..."
-        onkeyup="searchTable()"
-    >
-
-    <a href="/clear-history"
-       class="delete-btn">
-
-       🗑 Clear History
-
-    </a>
-
+      </a>
+      <nav class="nav">
+        <a href="/"><i data-lucide="search"></i> Scanner</a>
+        <a href="/dashboard"><i data-lucide="layout-dashboard"></i> Dashboard</a>
+        <a href="/history" class="active"><i data-lucide="history"></i> History</a>
+      </nav>
+      <div class="header-actions">
+        <span class="status-pill"><span class="dot"></span> API Online</span>
+        <button class="btn-primary"><i data-lucide="shield"></i> Pro</button>
+      </div>
+    </header>
+    <nav class="nav mobile-nav glass-panel">
+      <a href="/"><i data-lucide="search"></i> Scanner</a>
+      <a href="/dashboard"><i data-lucide="layout-dashboard"></i> Dashboard</a>
+      <a href="/history" class="active"><i data-lucide="history"></i> History</a>
+    </nav>
+  </div>
 </div>
 
-        <table class="history-table">
+<main class="container">
+  <div class="page-head">
+    <div>
+      <h1>Scan History</h1>
+      <p>A full log of every URL FishyWebAI has analyzed.</p>
+    </div>
+    <div class="toolbar">
+      <a href="/export-csv" class="btn-ghost">
+    <i data-lucide="download"></i>
+    Export CSV
+</a>
+      <button class="btn-danger" id="clearBtn"><i data-lucide="trash-2" width="16" height="16"></i> Clear History</button>
+    </div>
+  </div>
 
-            <thead>
-
-                <tr>
-                    <th>ID</th>
-                    <th>URL</th>
-                    <th>Result</th>
-                    <th>Confidence</th>
-                    <th>Time</th>
-                </tr>
-
-            </thead>
-
-            <tbody>
-
-                {% for scan in scans %}
-
-                <tr>
-
-                    <td>{{ scan[0] }}</td>
-
-                    <td>{{ scan[1] }}</td>
-
-                    <td>{{ scan[2] }}</td>
-
-                    <td>{{ scan[3] }}%</td>
-
-                    <td>{{ scan[4] }}</td>
-
-                </tr>
-
-                {% endfor %}
-
-            </tbody>
-
-        </table>
-
+  <div class="history-card glass-card">
+    <div class="search-bar">
+      <div class="search-input">
+        <i data-lucide="search" width="16" height="16" style="color:var(--muted-foreground)"></i>
+        <input id="searchInput" placeholder="Search by URL or scan ID…"/>
+      </div>
+      <div class="history-count" id="countText">12 scans</div>
     </div>
 
-</div>
+    <div style="overflow-x:auto">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>URL</th>
+            <th>Result</th>
+            <th>Confidence</th>
+            <th>Date</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+
+    <div class="pagination">
+      <span class="info" id="pageInfo">Page 1 of 1</span>
+      <div class="pager" id="pager"></div>
+    </div>
+  </div>
+</main>
+
+<footer>© 2026 FishyWebAI · AI-powered phishing detection · Powered by VirusTotal Intelligence</footer>
 
 <script>
+let items = [
+  { id: "SC-10241", url: "https://secure-paypal-login.verify-account.com", result: "High Risk", confidence: 97, date: "2026-05-29 14:22" },
+  { id: "SC-10240", url: "https://github.com/login", result: "Safe", confidence: 99, date: "2026-05-29 13:58" },
+  { id: "SC-10239", url: "http://amaz0n-prime-renewal.support-id.net", result: "High Risk", confidence: 94, date: "2026-05-29 12:11" },
+  { id: "SC-10238", url: "https://stripe.com/dashboard", result: "Safe", confidence: 98, date: "2026-05-29 11:47" },
+  { id: "SC-10237", url: "http://free-giftcard-claim.bonus-zone.io", result: "High Risk", confidence: 91, date: "2026-05-29 10:33" },
+  { id: "SC-10236", url: "https://docs.google.com/forms/d/abc", result: "Medium", confidence: 62, date: "2026-05-29 09:15" },
+  { id: "SC-10235", url: "https://news.ycombinator.com", result: "Safe", confidence: 99, date: "2026-05-28 22:04" },
+  { id: "SC-10234", url: "http://microsoft-security-alert.help-desk.co", result: "High Risk", confidence: 96, date: "2026-05-28 20:48" },
+  { id: "SC-10233", url: "https://linkedin.com/feed", result: "Safe", confidence: 99, date: "2026-05-28 18:20" },
+  { id: "SC-10232", url: "https://bit.ly/3xT9aQ", result: "Medium", confidence: 58, date: "2026-05-28 16:05" },
+  { id: "SC-10231", url: "https://openai.com/research", result: "Safe", confidence: 99, date: "2026-05-28 14:12" },
+  { id: "SC-10230", url: "http://netfllx-billing-update.account-verify.app", result: "High Risk", confidence: 95, date: "2026-05-28 11:39" }
+];
+const badgeMap = { "Safe": "safe", "Medium": "medium", "High Risk": "high" };
+let q = "", page = 1, perPage = 8;
 
-function searchTable() {
+function render() {
+  const filtered = items.filter(i =>
+    i.url.toLowerCase().includes(q.toLowerCase()) || i.id.toLowerCase().includes(q.toLowerCase())
+  );
+  const pages = Math.max(1, Math.ceil(filtered.length / perPage));
+  if (page > pages) page = pages;
+  const slice = filtered.slice((page-1)*perPage, page*perPage);
 
-    let input =
-    document.getElementById(
-    "historySearch"
-    );
+  document.getElementById('countText').textContent = filtered.length + (filtered.length === 1 ? ' scan' : ' scans');
+  document.getElementById('pageInfo').textContent = `Page ${page} of ${pages}`;
 
-    let filter =
-    input.value.toUpperCase();
+  const tbody = document.getElementById('tbody');
+  if (slice.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="6" class="table-empty">No scans match your search.</td></tr>`;
+  } else {
+    tbody.innerHTML = slice.map(r => `
+      <tr>
+        <td class="id">${r.id}</td>
+        <td class="url-cell">${r.url}</td>
+        <td><span class="tag ${badgeMap[r.result]}">${r.result}</span></td>
+        <td>
+          <div class="conf">
+            <div class="conf-bar"><div style="width:${r.confidence}%"></div></div>
+            <span class="conf-val">${r.confidence}%</span>
+          </div>
+        </td>
+        <td class="date-cell">${r.date}</td>
+        <td style="text-align:right"><button class="icon-btn"><i data-lucide="external-link" width="16" height="16"></i></button></td>
+      </tr>
+    `).join('');
+  }
 
-    let table =
-    document.querySelector(
-    ".history-table"
-    );
+  const pager = document.getElementById('pager');
+  let html = `<button ${page===1?'disabled':''} data-go="prev"><i data-lucide="chevron-left" width="14" height="14"></i></button>`;
+  for (let i=1; i<=pages; i++) {
+    html += `<button class="${i===page?'active':''}" data-go="${i}">${i}</button>`;
+  }
+  html += `<button ${page===pages?'disabled':''} data-go="next"><i data-lucide="chevron-right" width="14" height="14"></i></button>`;
+  pager.innerHTML = html;
 
-    let tr =
-    table.getElementsByTagName(
-    "tr"
-    );
+  pager.querySelectorAll('button').forEach(b => {
+    b.addEventListener('click', () => {
+      const g = b.dataset.go;
+      if (g === 'prev') page = Math.max(1, page-1);
+      else if (g === 'next') page = Math.min(pages, page+1);
+      else page = parseInt(g);
+      render();
+    });
+  });
 
-    for(let i=1;i<tr.length;i++){
-
-        let td =
-        tr[i].getElementsByTagName(
-        "td"
-        )[1];
-
-        if(td){
-
-            let txt =
-            td.textContent;
-
-            tr[i].style.display =
-            txt.toUpperCase()
-            .includes(filter)
-            ? ""
-            : "none";
-        }
-    }
+  lucide.createIcons();
 }
 
-</script>
+document.getElementById('searchInput').addEventListener('input', (e) => {
+  q = e.target.value; page = 1; render();
+});
+document.getElementById('clearBtn').addEventListener('click', () => {
+  items = []; page = 1; render();
+});
 
+render();
+lucide.createIcons();
+</script>
 </body>
 </html>
